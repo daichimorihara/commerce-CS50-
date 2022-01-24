@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    <h4>{{ list.title }}</h4>
+    <img src="{{ list.url }}" alt="listing image" width="50" height="60">
+    <ul>
+        <li>{{ list.description }}</li>
+        <li>${{ list.starting_bid }}</li>
+        {% if list.max_bid.bid %}
+            <li>{{list.max_bid.bid }}</li>
+        {% endif %}
+
+    </ul>
+    <a href="{% url 'add' list.id %}">Add WatchList</a>
+
+    <h4>Add Bid</h4>
+    <p>Current Price: ${{}}</p>
+
+{% endblock %}

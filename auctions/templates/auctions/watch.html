@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watch List</h2>
+    {% for item in watchlist %}
+    <h4>{{ item.listing.title }}</h4>
+    <a href="{% url 'delete' item.listing.id %}">Delete form WatchList</a>
+    <img src="{{ item.listing.url }}" alt="listing image" width="200" height="300">
+    <ul>
+        <li>{{ item.listing.description }}</li>
+        <li>Base Bid: {{ item.listing.starting_bid }}</li>
+    </ul>
+    {% endfor %}
+    
+{% endblock %}
