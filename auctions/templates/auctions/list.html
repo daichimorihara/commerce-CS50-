@@ -7,15 +7,28 @@
     <img src="{{ list.url }}" alt="listing image" width="50" height="60">
     <ul>
         <li>{{ list.description }}</li>
-        <li>${{ list.starting_bid }}</li>
-        {% if list.max_bid.bid %}
-            <li>{{list.max_bid.bid }}</li>
-        {% endif %}
+        <li>Base Bid: ${{ list.starting_bid }}</li>
 
     </ul>
     <a href="{% url 'add' list.id %}">Add WatchList</a>
 
     <h4>Add Bid</h4>
-    <p>Current Price: ${{}}</p>
+    <p>{{ list.max_bid }}</p>
+    <form action="{% url 'addbid' list.id %}" method="post">
+        {% csrf_token %}
+       
+        {{ formBid }}
+        <input type="submit", value="submit"> 
+    </form>
 
+    <h4>Add Comments</h4>
+    <form action="{% url 'comment' list.id %}" method="post">
+        {% csrf_token %}
+       
+        {{ formComment }}
+        <input type="submit", value="submit">
+    </form>
+        <ul>
+            <li>{{ comment.text }}</li>
+        </ul>
 {% endblock %}

@@ -1,12 +1,21 @@
+from ast import Add
+from cProfile import label
+from logging import PlaceHolder
 from tkinter.tix import ListNoteBook
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
+from django import forms
 
 from .models import User, Listing, Bid, Comment, Watchlist
 
+class AddBid(forms.Form):
+    bid = forms.IntegerField(label="Add Bid", min_value=Listing.max_bid)
+
+class AddComment(forms.Form):
+    comment = forms.CharField(label="Add Comment")
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -77,7 +86,9 @@ def create(request):
     
 def list(request, id):
     return render(request, "auctions/list.html", {
-        "list": Listing.objects.get(id=id)
+        "list": Listing.objects.get(id=id),
+        "formBid": AddBid(),
+        "formComment": AddComment()
     })
     
 def watch(request):
@@ -97,4 +108,20 @@ def delete_watch(request, id):
 
 def add_bid(request, id):
     if request.method == "POST":
+        bid = request.POST["bid"]
+        listing = Listing.objects.get(pk=id)
+        b = Bid(listing=listing, user=request.user, bid=bid)
+        b.save()
+        listing.max_bid = b.bid
+        listing.winner = b.user
+        listing.save()
         
+        return redirect("list", id)
+
+def add_comment(request, id):
+    if request.method == "POST":
+        comment = request.POST["comment"]
+        listing = Listing.objects.get(pk=id)
+        c = Comment(listing=listing, user=request.user, text=comment)
+        c.save()
+        return redirect("list", id)

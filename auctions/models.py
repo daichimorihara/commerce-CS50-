@@ -1,3 +1,4 @@
+from curses.ascii import NUL
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max
@@ -17,7 +18,10 @@ class Listing(models.Model):
     winner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="theirwinning")
 
     def max_bid(self):
-        return Bid.objects.all().filter(listing=self).aggregate(Max('bid'))
+        if Bid.objects.all().filter(listing=self).aggregate(Max('bid')):
+            return Bid.objects.all().filter(listing=self).aggregate(Max('bid'))
+        else:
+            return self.starting_bid
     
     def __str__(self):
         return f"{self.title}: {self.description} - {self.starting_bid}"
@@ -30,8 +34,8 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comment")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=5000)
 
     def __str__(self):
